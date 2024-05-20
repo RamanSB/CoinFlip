@@ -24,8 +24,6 @@ import {VRFV2PlusClient} from "@chainlink/contracts/src/v0.8/vrf/dev/libraries/V
 /**
     TODO: Write documentation here (NatSpec)
     TODO: ReEntrancyGuard on bet function
-    TODO: Read security considerations for VRF.
-    TODO: Add fallback / receive functions so contract can be funded.
  */
 contract CoinFlip is VRFConsumerBaseV2Plus {
     // Enums & Structs
@@ -64,6 +62,12 @@ contract CoinFlip is VRFConsumerBaseV2Plus {
         uint256 amount
     );
 
+    event CoinFlip__PaymentFailed(
+        address indexed user,
+        uint256 indexed requestId,
+        uint256 indexed amount
+    );
+    event CoinFlip__ErrorLog(string message, uint256 indexed requestId);
     event CoinFlip__FlipRequest(
         address indexed player,
         uint256 indexed requestId,
@@ -88,6 +92,7 @@ contract CoinFlip is VRFConsumerBaseV2Plus {
     uint256 private immutable i_subscriptionId;
     uint32 private immutable i_callbackGasLimit;
     bytes32 private immutable i_gasLane;
+    mapping(address => bool) internal s_locksByUser;
 
     uint256 immutable MINIMUM_WAGER;
     uint256 private s_totalPotentialPayout;
@@ -109,7 +114,18 @@ contract CoinFlip is VRFConsumerBaseV2Plus {
         i_gasLane = gasLane;
     }
 
-    function bet(uint8 userChoice) external payable {
+    modifier ReEntrancyGuard() {
+        require(!s_locksByUser[msg.sender], "ReEntrancy not allowed");
+        s_locksByUser[msg.sender] = true;
+        _;
+        s_locksByUser[msg.sender] = false;
+    }
+
+    receive() external payable {}
+
+    fallback() external payable {}
+
+    function bet(uint8 userChoice) external payable ReEntrancyGuard {
         // Checks
         // User bets above minimum amount
         if (msg.value < MINIMUM_WAGER) {
@@ -182,7 +198,8 @@ contract CoinFlip is VRFConsumerBaseV2Plus {
             requestId
         ];
         if (recentRequest.amount == 0) {
-            revert CoinFlip__NoBetFoundForRequestId(requestId);
+            emit CoinFlip__ErrorLog("Invalid request data", requestId);
+            return;
         }
         uint256 potentialPayoutAmount = 2 * recentRequest.amount;
         s_totalPotentialPayout -= potentialPayoutAmount;
@@ -197,7 +214,7 @@ contract CoinFlip is VRFConsumerBaseV2Plus {
             }("");
 
             if (!sent) {
-                revert CoinFlip__PayoutFailed(
+                emit CoinFlip__PaymentFailed(
                     recentRequest.user,
                     requestId,
                     potentialPayoutAmount
