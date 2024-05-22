@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.25;
 
 /**
 
@@ -23,7 +23,8 @@ import {VRFV2PlusClient} from "@chainlink/contracts/src/v0.8/vrf/dev/libraries/V
 
 /**
     TODO: Write documentation here (NatSpec)
-    TODO: ReEntrancyGuard on bet function
+    TODO: Download CLI tool for setting solc versions
+    TODO: Think about functions that can be used by the Owner to withdraw profits and to Fund the contract.
  */
 contract CoinFlip is VRFConsumerBaseV2Plus {
     // Enums & Structs
@@ -144,13 +145,13 @@ contract CoinFlip is VRFConsumerBaseV2Plus {
             revert CoinFlip__ExistingBetIsInProgress(msg.sender);
         }
 
-        // Check if contract has amount to pay user.
-        uint256 contractBalance = address(this).balance;
-        if (contractBalance - s_totalPotentialPayout < msg.value) {
+        // Check if contract has amount to pay user excluding the funds the user has provided.
+        uint256 contractBalanceExcludingBet = address(this).balance - msg.value;
+        if (contractBalanceExcludingBet - s_totalPotentialPayout < msg.value) {
             revert CoinFlip__InsufficientFundsForPayout(
                 msg.sender,
                 msg.value,
-                contractBalance
+                contractBalanceExcludingBet
             );
         }
 
@@ -234,5 +235,27 @@ contract CoinFlip is VRFConsumerBaseV2Plus {
                 potentialPayoutAmount
             );
         }
+    }
+
+    function getRecentCoinFlipResultByAddress(
+        address user
+    ) public view returns (CoinFlipRequest memory) {
+        return s_recentFlipRequestByAddress[user];
+    }
+
+    function getTotalPotentialPayout() public view returns (uint256) {
+        return s_totalPotentialPayout;
+    }
+
+    function getPotentialPayoutForAddress(
+        address user
+    ) public view returns (uint256) {
+        return s_potentialPayoutByAddress[user];
+    }
+
+    function getResultByRequestId(
+        uint256 requestId
+    ) public view returns (CoinFlipRequest memory) {
+        return s_flipRequestByRequestId[requestId];
     }
 }

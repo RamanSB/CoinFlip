@@ -15,3 +15,10 @@ For a user to make a bet:
     2. Contract must have a balance that is greater than or equal to the amount bet. We must factor in the potential pay out of existing bets from the funds the contract has.
     3. mapping(address => uint256) private totalPotentialPayouts; // Track of how much we potentially owe to a particular address. 
     4. 
+
+### Tests
+
+1) If user bets below the minimum amount we revert (expect Revert from bet())
+2) If user bets (above minimum) but has a prior flip that is not finished and amount > 0 (expect revert from Bet())
+3) If contract balance is not valid to payout revert.
+
