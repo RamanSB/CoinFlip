@@ -1,17 +1,19 @@
 # Compiler files
-cache/
-out/
+/smart-contracts/cache/
+/smart-contracts/out/
 
 # Ignores development broadcast logs
-!/broadcast
-/broadcast/*/31337/
-/broadcast/**/dry-run/
+/smart-contracts/broadcast/
+/smart-contracts/broadcast/**/*.json
 
 # Docs
-docs/
+/smart-contracts/docs/
 
 # Dotenv file
 .env
 
 # Build Files
-bin/
+/smart-contracts/bin/
+
+# Lib (Dependencies)
+/smart-contracts/lib/
