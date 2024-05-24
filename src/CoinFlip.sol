@@ -20,11 +20,10 @@ pragma solidity ^0.8.25;
 
 import {VRFConsumerBaseV2Plus} from "@chainlink/contracts/src/v0.8/vrf/dev/VRFConsumerBaseV2Plus.sol";
 import {VRFV2PlusClient} from "@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol";
+// import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
 /**
     TODO: Write documentation here (NatSpec)
-    TODO: Download CLI tool for setting solc versions
-    TODO: Think about functions that can be used by the Owner to withdraw profits and to Fund the contract.
  */
 contract CoinFlip is VRFConsumerBaseV2Plus {
     // Enums & Structs
@@ -62,6 +61,7 @@ contract CoinFlip is VRFConsumerBaseV2Plus {
         uint256 requestId,
         uint256 amount
     );
+    error CoinFlip__InsufficientFundsToWithdraw(uint256 amount);
 
     event CoinFlip__PaymentFailed(
         address indexed user,
@@ -85,6 +85,8 @@ contract CoinFlip is VRFConsumerBaseV2Plus {
         uint256 indexed requestId,
         uint256 amount
     );
+    event CoinFlip__Funded(address indexed funder, uint256 indexed amount);
+    event CoinFlip__Withdrawl(uint256 indexed balance, uint256 indexed amount);
 
     // VRF State Variables
     uint16 private constant NUMBER_OF_REQUEST_CONFIRMATIONS = 3;
@@ -125,6 +127,21 @@ contract CoinFlip is VRFConsumerBaseV2Plus {
     receive() external payable {}
 
     fallback() external payable {}
+
+    function fund() external payable ReEntrancyGuard {
+        require(msg.value > 0, "Cannot fund with zero ether");
+        emit CoinFlip__Funded(msg.sender, msg.value);
+    }
+
+    function withdraw(uint256 amount) external onlyOwner ReEntrancyGuard {
+        uint256 balance = address(this).balance;
+        if (balance < amount) {
+            revert CoinFlip__InsufficientFundsToWithdraw(amount);
+        }
+        (bool sent /* bytes memory */, ) = msg.sender.call{value: amount}("");
+        require(sent, "Withdrawal failed");
+        emit CoinFlip__Withdrawl(balance, amount);
+    }
 
     function bet(uint8 userChoice) external payable ReEntrancyGuard {
         // Checks

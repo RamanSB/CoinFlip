@@ -10,14 +10,9 @@ contract CreateSubscription is Script {
         address vrfCoordinator
     ) public returns (uint256) {
         vm.startBroadcast();
-        uint256 subId;
-        if (block.chainid == 31337) {
-            subId = VRFCoordinatorV2PlusMock(vrfCoordinator)
-                .createSubscription();
-        } else {
-            console.log("Chain ID: ", block.chainid);
-            // subId = VRFCoordinatorV2Plus(vrfCoordinator).createSubscription();
-        }
+        uint256 subId = VRFCoordinatorV2PlusMock(vrfCoordinator)
+            .createSubscription();
+
         vm.stopBroadcast();
         console.log("Creating Subscripton on Chain: ", block.chainid);
         console.log("Created SubId: ", subId);

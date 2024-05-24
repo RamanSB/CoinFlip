@@ -1,18 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {Script, console} from "forge-std/Script.sol";
 import {HelperConfig} from "./HelperConfig.s.sol";
 import {CoinFlip} from "../src/CoinFlip.sol";
 import {CreateSubscription, FundSubscription, AddConsumer} from "./Interactions.s.sol";
+import {Script, console} from "forge-std/Script.sol";
 
-/* 
-    In this deployment script we should expect to create & fund a subscription and add our consuming contract to that subscription.
-    If one has not been created already.
-
-    In the case of Sepolia we would have already created a subscription via the Chainlink GUI.
-    Otherwise 
-*/
 contract DeployCoinFlip is Script {
     uint256 constant MINIMUM_WAGER = 0.001 ether; // Change this to 0.005. Post Testing
 
@@ -27,7 +20,7 @@ contract DeployCoinFlip is Script {
         ) = helperConfig.activeNetworkConfig();
 
         if (subscriptionId == 0) {
-            // Ideally only on Anvil (otherwise we can create s)
+            // Ideally only on Anvil (otherwise we can creates)
             CreateSubscription createSubscription = new CreateSubscription();
             subscriptionId = createSubscription.createSubscription(
                 vrfCoordinator
