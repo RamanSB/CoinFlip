@@ -2,8 +2,7 @@
 pragma solidity ^0.8.25;
 
 /**
- Solidity Contract Layout:
- 
+ Solidity Contract Layout: 
     1. Pragmas
     2. Import Statements
     3. Interfaces

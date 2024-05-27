@@ -1,0 +1,15 @@
+* {
+    padding: 0px;
+    margin: 0px;
+    box-sizing: border-box;
+}
+
+:root {
+    --main-bg-color: #0000;
+}
+
+body {
+    background-color: black;
+    color: white;
+    
+}
