@@ -7,7 +7,7 @@ import {CreateSubscription, FundSubscription, AddConsumer} from "./Interactions.
 import {Script, console} from "forge-std/Script.sol";
 
 contract DeployCoinFlip is Script {
-    uint256 constant MINIMUM_WAGER = 0.001 ether; // Change this to 0.005. Post Testing
+    uint256 constant MINIMUM_WAGER = 0.00001 ether; // Change this to 0.0025. Post Testing
 
     function run() external returns (CoinFlip, HelperConfig) {
         HelperConfig helperConfig = new HelperConfig();

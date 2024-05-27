@@ -2,28 +2,29 @@
 pragma solidity ^0.8.25;
 
 /**
-
-// Solidity Contract Layout:
-// 1. Pragmas
-// 2. Import Statements
-// 3. Interfaces
-// 4. Libraries
-// 5. Contracts
-// 6. Enums and Structs
-// 7. Errors
-// 7. Events
-// 8. State Variables
-// 9. Constructor
-// 10. Modifiers
-// 11. Functions
+ Solidity Contract Layout:
+ 
+    1. Pragmas
+    2. Import Statements
+    3. Interfaces
+    4. Libraries
+    5. Contracts
+    6. Enums and Structs
+    7. Errors
+    7. Events
+    8. State Variables
+    9. Constructor
+    11. Functions
+    10. Modifiers
  */
 
 import {VRFConsumerBaseV2Plus} from "@chainlink/contracts/src/v0.8/vrf/dev/VRFConsumerBaseV2Plus.sol";
 import {VRFV2PlusClient} from "@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol";
-// import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
 /**
-    TODO: Write documentation here (NatSpec)
+ * @title CoinFlip Contract
+ * @author 0xNascosta / RamanSB
+ * @dev This contract implements a coin flip betting game using Chainlink VRF for randomness.
  */
 contract CoinFlip is VRFConsumerBaseV2Plus {
     // Enums & Structs
@@ -48,14 +49,19 @@ contract CoinFlip is VRFConsumerBaseV2Plus {
     }
 
     // Errors
+    /// @notice Bet is below the minimum amount
     error CoinFlip__BetIsBelowMinimumAmount(address player, uint256 amount);
+    /// @notice Existing bet in progress (can only place 1 live bet at a time)
     error CoinFlip__ExistingBetIsInProgress(address player);
+    /// @notice CoinFlip contract has insufficient funds to payout potential bet.
     error CoinFlip__InsufficientFundsForPayout(
         address player,
         uint256 wageAmount,
         uint256 balance
     );
+    /// @notice Unable to associate result with bet placed due to requestId not found.
     error CoinFlip__NoBetFoundForRequestId(uint256 requestId);
+    /// @notice Error with the call function (sending payout)
     error CoinFlip__PayoutFailed(
         address player,
         uint256 requestId,
@@ -63,12 +69,15 @@ contract CoinFlip is VRFConsumerBaseV2Plus {
     );
     error CoinFlip__InsufficientFundsToWithdraw(uint256 amount);
 
+    /// @notice Logs when a payment to a winning player fails
     event CoinFlip__PaymentFailed(
         address indexed user,
         uint256 indexed requestId,
         uint256 indexed amount
     );
+    /// @notice Logs a winning (0 ether) bet which should never occur
     event CoinFlip__ErrorLog(string message, uint256 indexed requestId);
+    /// @notice Logs a players coin flip bet
     event CoinFlip__FlipRequest(
         address indexed player,
         uint256 indexed requestId,
@@ -89,20 +98,40 @@ contract CoinFlip is VRFConsumerBaseV2Plus {
     event CoinFlip__Withdrawl(uint256 indexed balance, uint256 indexed amount);
 
     // VRF State Variables
+    /// @dev Minimum number of blocks to be confirmed before Chainlink VRF invokes our fulfillRandomWords (sends us our random word.)
     uint16 private constant NUMBER_OF_REQUEST_CONFIRMATIONS = 3;
+    /// @dev Number of random words to request from Chainlink VRF
     uint32 private constant NUMBER_OF_WORDS = 1;
+    /// @dev Address of Chainlink VRF Coordinator
     address s_vrfCoordinatorAddress;
+    /// @dev Chainlink VRF subscription id.
     uint256 private immutable i_subscriptionId;
+    /// @dev Maximum gas we are willing to pay for gas used by our fulfillRandomWords
     uint32 private immutable i_callbackGasLimit;
+    /// @dev Specifies the maximum gas price we are willing to pay to make a request.
     bytes32 private immutable i_gasLane;
+    /// @dev ReEntrancy locks per user.
     mapping(address => bool) internal s_locksByUser;
 
+    /// @dev minimum amount a user must wage.
     uint256 immutable MINIMUM_WAGER;
+    /// @dev Tracks the potential amount the contract is required to potentially payout (tracks potential payout of unconcluded games)
     uint256 private s_totalPotentialPayout;
+    /// @dev Status of coin flip game by request ID
     mapping(uint256 => CoinFlipRequest) private s_flipRequestByRequestId;
+    /// @dev Status of most recent coin flip game by address
     mapping(address => CoinFlipRequest) private s_recentFlipRequestByAddress;
+    /// @dev Tracks potential payout of in-play (unconcluded) games by address.
     mapping(address => uint256) private s_potentialPayoutByAddress;
 
+    /**
+     * @notice Constructor to initialize the CoinFlip contract
+     * @param minimumWager The minimum amount required to place a bet
+     * @param vrfCoordinatorAddress The address of the VRF Coordinator
+     * @param subscriptionId The subscription ID for Chainlink VRF
+     * @param gasLane The gas lane key hash for VRF
+     * @param callbackGasLimit The gas limit for the VRF callback
+     */
     constructor(
         uint256 minimumWager,
         address vrfCoordinatorAddress,
@@ -117,6 +146,9 @@ contract CoinFlip is VRFConsumerBaseV2Plus {
         i_gasLane = gasLane;
     }
 
+    /**
+     * @dev Modifier to prevent reentrancy attacks
+     */
     modifier ReEntrancyGuard() {
         require(!s_locksByUser[msg.sender], "ReEntrancy not allowed");
         s_locksByUser[msg.sender] = true;
@@ -128,11 +160,18 @@ contract CoinFlip is VRFConsumerBaseV2Plus {
 
     fallback() external payable {}
 
+    /**
+     * @notice Function to fund the contract with ether
+     */
     function fund() external payable ReEntrancyGuard {
         require(msg.value > 0, "Cannot fund with zero ether");
         emit CoinFlip__Funded(msg.sender, msg.value);
     }
 
+    /**
+     * @notice Function for the owner to withdraw ether from the contract
+     * @param amount The amount of ether to withdraw
+     */
     function withdraw(uint256 amount) external onlyOwner ReEntrancyGuard {
         uint256 balance = address(this).balance;
         if (balance < amount) {
@@ -143,6 +182,10 @@ contract CoinFlip is VRFConsumerBaseV2Plus {
         emit CoinFlip__Withdrawl(balance, amount);
     }
 
+    /**
+     * @notice Function to place a bet on the coin flip game
+     * @param userChoice The choice of the user (0 for HEADS, 1 for TAILS)
+     */
     function bet(uint8 userChoice) external payable ReEntrancyGuard {
         // Checks
         // User bets above minimum amount
@@ -206,6 +249,11 @@ contract CoinFlip is VRFConsumerBaseV2Plus {
         s_recentFlipRequestByAddress[msg.sender] = flipRequest;
     }
 
+    /**
+     * @notice Function called by VRF coordinator to fulfill random words request
+     * @param requestId The ID of the VRF request
+     * @param randomWords The array of random words generated
+     */
     function fulfillRandomWords(
         uint256 requestId,
         uint256[] memory randomWords
@@ -254,22 +302,41 @@ contract CoinFlip is VRFConsumerBaseV2Plus {
         }
     }
 
+    /**
+     * @notice Get the most recent coin flip result for a given address
+     * @param user The address of the user
+     * @return CoinFlipRequest The most recent coin flip request
+     */
     function getRecentCoinFlipResultByAddress(
         address user
     ) public view returns (CoinFlipRequest memory) {
         return s_recentFlipRequestByAddress[user];
     }
 
+    /**
+     * @notice Get the total potential payout for all bets
+     * @return uint256 The total potential payout
+     */
     function getTotalPotentialPayout() public view returns (uint256) {
         return s_totalPotentialPayout;
     }
 
+    /**
+     * @notice Get the potential payout for a specific user
+     * @param user The address of the user
+     * @return uint256 The potential payout for the user
+     */
     function getPotentialPayoutForAddress(
         address user
     ) public view returns (uint256) {
         return s_potentialPayoutByAddress[user];
     }
 
+    /**
+     * @notice Get the coin flip result by request ID
+     * @param requestId The ID of the request
+     * @return CoinFlipRequest The coin flip request data
+     */
     function getResultByRequestId(
         uint256 requestId
     ) public view returns (CoinFlipRequest memory) {
