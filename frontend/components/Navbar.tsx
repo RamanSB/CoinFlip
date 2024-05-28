@@ -13,15 +13,15 @@ export enum ViewType {
     CRYPTO = "Crypto"
 }
 
-const StyledButton = styled(Button)<{ active: boolean }>(({ theme, active }) => ({
-    backgroundColor: active ? "white" : "transparent",
-    color: active ? "black" : "white",
+const StyledButton = styled(Button)<{ active: string }>(({ theme, active }) => ({
+    backgroundColor: active === "true" ? "white" : "transparent",
+    color: active === "true" ? "black" : "white",
     borderColor: "white",
     fontFamily: comfortaa.style.fontFamily,
     fontWeight: 400,
     textTransform: "capitalize",
     "&:hover": {
-        backgroundColor: active ? "white" : theme.palette.action.hover,
+        backgroundColor: active === "true" ? "white" : theme.palette.action.hover,
         border: "1px solid white",
         color: "black",
     },
@@ -30,8 +30,8 @@ const StyledButton = styled(Button)<{ active: boolean }>(({ theme, active }) => 
 const Navbar = () => {
 
     const HOUSE_BALANCE = 0.25; // TODO: Fetch this...
-    const [viewType, setViewType] = useState<null | ViewType>(null);
-
+    const [viewType, setViewType] = useState<null | ViewType>(ViewType.CRYPTO);
+    console.log(`View Type: ${viewType}`);
     return <div className={styles.navbar}>
         <div className={styles.leftNavbarItem}>
             {/* <HouseIcon style={{ color: "", fontSize: "1.5em" }} /> */}
@@ -40,8 +40,8 @@ const Navbar = () => {
         </div>
         <div className={styles.rightNavbarItem}>
             <ButtonGroup>
-                <StyledButton active={viewType === ViewType.CRYPTO} onClick={() => setViewType(ViewType.CRYPTO)}>Ξ</StyledButton>
-                <StyledButton active={viewType === ViewType.FIAT} onClick={() => setViewType(ViewType.FIAT)}>$</StyledButton>
+                <StyledButton active={`${viewType === ViewType.CRYPTO}`} onClick={() => setViewType(ViewType.CRYPTO)}>Ξ</StyledButton>
+                <StyledButton active={`${viewType === ViewType.FIAT}`} onClick={() => setViewType(ViewType.FIAT)}>$</StyledButton>
             </ButtonGroup>
         </div>
     </div>

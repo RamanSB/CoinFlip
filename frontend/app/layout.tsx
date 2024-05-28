@@ -3,6 +3,7 @@ import { Inter, Comfortaa } from "next/font/google";
 
 import "./globals.css";
 import Navbar from "@/components/Navbar";
+import Providers from "./providers";
 
 const inter = Inter({ subsets: ["latin"] });
 const comfortaa = Comfortaa({ subsets: ["latin"] });
@@ -20,8 +21,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={comfortaa.className}>
-        <Navbar />
-        {children}
+        <Providers>
+          <Navbar />
+          {children}
+        </Providers>
       </body>
     </html>
   );
