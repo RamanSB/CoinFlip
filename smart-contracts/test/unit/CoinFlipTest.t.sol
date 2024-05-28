@@ -163,7 +163,7 @@ contract CoinFlipTest is Test {
         resultByRequestId = coinFlip.getResultByRequestId(1);
 
         // then
-        assert(result.state == CoinFlip.State.FINISHED);
+        assert(result.state == CoinFlip.State.WIN);
         assertTrue(compareCoinFlipRequest(result, resultByRequestId));
         assert(coinFlip.getPotentialPayoutForAddress(PLAYER_ONE) == 0 ether);
         assert(coinFlip.getTotalPotentialPayout() == 0 ether);
@@ -223,7 +223,7 @@ contract CoinFlipTest is Test {
         resultByRequestId = coinFlip.getResultByRequestId(1);
 
         // then
-        assert(result.state == CoinFlip.State.FINISHED);
+        assert(result.state == CoinFlip.State.LOSS);
         assertTrue(compareCoinFlipRequest(result, resultByRequestId));
         assert(coinFlip.getPotentialPayoutForAddress(PLAYER_ONE) == 0 ether);
         assert(coinFlip.getTotalPotentialPayout() == 0 ether);

@@ -29,8 +29,8 @@ contract CoinFlip is VRFConsumerBaseV2Plus {
     // Enums & Structs
     enum State {
         OPEN, // 0
-        FLIPPING, // 1
-        FINISHED // 2
+        WIN, // 1
+        LOSS // 2
     }
 
     // Even = Heads, Odd = Tails
@@ -198,7 +198,7 @@ contract CoinFlip is VRFConsumerBaseV2Plus {
         ];
         if (
             recentFlipRequest.amount != 0 &&
-            recentFlipRequest.state != State.FINISHED
+            (recentFlipRequest.state == State.OPEN)
         ) {
             // Users recent
             revert CoinFlip__ExistingBetIsInProgress(msg.sender);
@@ -269,10 +269,11 @@ contract CoinFlip is VRFConsumerBaseV2Plus {
         uint256 potentialPayoutAmount = 2 * recentRequest.amount;
         s_totalPotentialPayout -= potentialPayoutAmount;
         delete s_potentialPayoutByAddress[recentRequest.user];
-        recentRequest.state = State.FINISHED;
-        s_flipRequestByRequestId[requestId] = recentRequest;
-        s_recentFlipRequestByAddress[recentRequest.user] = recentRequest;
+
         if (recentRequest.choice == result) {
+            recentRequest.state = State.WIN;
+            s_flipRequestByRequestId[requestId] = recentRequest;
+            s_recentFlipRequestByAddress[recentRequest.user] = recentRequest;
             // User has won.
             (bool sent /* bytes memory data */, ) = (recentRequest.user).call{
                 value: potentialPayoutAmount
@@ -292,6 +293,9 @@ contract CoinFlip is VRFConsumerBaseV2Plus {
                 potentialPayoutAmount
             );
         } else {
+            recentRequest.state = State.LOSS;
+            s_flipRequestByRequestId[requestId] = recentRequest;
+            s_recentFlipRequestByAddress[recentRequest.user] = recentRequest;
             // User has lost.
             emit CoinFlip__FlipLoss(
                 recentRequest.user,
