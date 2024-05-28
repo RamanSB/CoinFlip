@@ -94,8 +94,8 @@ const useWeb3Provider = () => {
             setState({ ...state, address: accounts[0] });
         });
 
-        window.ethereum.on("networkChanged", (network: string) => {
-            console.log(`Switched network to: ${network}`);
+        window.ethereum.on("chainChanged", (network: string) => {
+            console.log(`Switched chain to: ${network}`);
             setState({ ...state, chainId: Number(network) });
         });
 
