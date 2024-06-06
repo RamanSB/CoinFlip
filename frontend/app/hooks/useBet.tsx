@@ -30,7 +30,8 @@ const useBet = () => {
                 console.log(`bet(): Logs Bloom: ${receipt.logsBloom}`);
             }
         } catch (error) {
-            console.log(`Error whilst invoking bet(${choice}, ${parseUnits(amount.toString(), 18)}): ${error}`);
+            console.log(`Error whilst invoking bet(${choice}, ${parseUnits(amount.toString(), 18)}).\n${error}`);
+            // Set GameState to OPEN...
         } finally {
             setLoading(false);
         }

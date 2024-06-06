@@ -1,18 +1,14 @@
 "use client";
-import Image from "next/image";
-import { Button, ButtonGroup, Grid, styled } from "@mui/material";
-import { useState } from "react";
-import { Comfortaa } from "next/font/google";
-import { CatchingPokemonSharp } from "@mui/icons-material";
 import useBet from "@/app/hooks/useBet";
-import { ethers, parseUnits } from "ethers";
+import { Choice, GameState, ViewType } from "@/app/types/types";
+import { Button, ButtonGroup, Grid, Icon, styled } from "@mui/material";
+import { Comfortaa } from "next/font/google";
+import Image from "next/image";
+import React, { Dispatch, SetStateAction, useState } from "react";
+import CircularProgress from '@mui/material/CircularProgress';
+
 
 const comfortaa = Comfortaa({ subsets: ["latin"] });
-
-export enum Choice {
-    HEADS = "Heads",
-    TAILS = "Tails"
-}
 
 const StyledButton = styled(Button)<{ active: string }>(({ theme, active }) => ({
     backgroundColor: active === "true" ? "white" : "transparent",
@@ -42,26 +38,34 @@ const BetButton = styled(Button)(({ theme }) => ({
     }
 }));
 
-const BetForm = () => {
+
+export type IBetFormProps = {
+    viewType: ViewType;
+    setGameState: Dispatch<SetStateAction<GameState>>
+}
+
+const BetForm: React.FC<IBetFormProps> = ({ viewType, setGameState }) => {
 
     const [choice, setChoice] = useState<Choice | null>(null);
     const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
+
     const { bet, loading } = useBet();
     const PRESET_BET_AMOUNTS: number[] = [0.0005, 0.0025, 0.01, 0.05, 0.1, 0.25];
 
     const handleBet = async () => {
-        // TODO: Fill this out.
-        console.log(`handleBet(${choice}, ${selectedAmount})`);
-        if (!selectedAmount) {
-            return;
+        try {
+            console.log(`handleBet(${choice}, ${selectedAmount})`);
+            if (!selectedAmount) {
+                return;
+            }
+            await bet(choice === Choice.HEADS ? 0 : 1, selectedAmount);
+        } catch (error) {
+            console.log(`Error while executing handleBet(): ${error}`);
         }
-
-        await bet(choice === Choice.HEADS ? 0 : 1, selectedAmount);
     }
 
-
     return <div style={{ padding: "16px" }}>
-        <p style={{ marginBottom: "16px", textAlign: "center", fontSize: "1.5em" }}>I would like</p>
+        <p style={{ marginBottom: "16px", textAlign: "center", fontSize: "1.5em" }}>I like</p>
         <ButtonGroup fullWidth>
             <StyledButton
                 variant="outlined"
@@ -94,8 +98,8 @@ const BetForm = () => {
                 </Grid>
             ))}
         </Grid>
-        <BetButton fullWidth variant="outlined" style={{ marginTop: "16px" }} disabled={!choice || !selectedAmount} onClick={() => handleBet()}>
-            Bet
+        <BetButton fullWidth variant="outlined" style={{ marginTop: "16px" }} disabled={!choice || !selectedAmount || loading} onClick={() => handleBet()}>
+            Bet {loading && <CircularProgress size={24} style={{ color: "white", marginLeft: 4 }} />}
         </BetButton>
     </div>
 }

@@ -39,6 +39,7 @@ contract CoinFlipTest is Test {
     uint256 constant COINFLIP_INITIAL_BALANCE = 10 ether;
     uint256 constant INITIAL_PLAYER_BALANCE = 1 ether;
     uint256 constant MINIMUM_WAGER = 0.001 ether;
+    address constant DEPLOYER = 0x1804c8AB1F12E6bbf3894d4083f33e07309d1f38;
     address PLAYER_ONE = makeAddr("Player 1");
     address PLAYER_TWO = makeAddr("Player 2");
 
@@ -231,6 +232,47 @@ contract CoinFlipTest is Test {
             address(coinFlip).balance == COINFLIP_INITIAL_BALANCE + BET_AMOUNT
         );
         assert(PLAYER_ONE.balance == INITIAL_PLAYER_BALANCE - BET_AMOUNT);
+    }
+
+    function test_RevertWhenNonOwnerAttemptsToWithdraw() public {
+        // given
+        vm.deal(address(coinFlip), 1 ether);
+
+        // when - withdrawing as a non owner - expect a revert
+        vm.prank(PLAYER_ONE);
+        vm.expectRevert();
+        coinFlip.withdraw(0.5 ether);
+    }
+
+    function test_shouldWithdrawWhenOwnerAttempts() public {
+        // given
+        vm.deal(address(coinFlip), 1 ether);
+        uint256 initialCoinFlipBalance = address(coinFlip).balance; // 1 ether;
+        uint256 withdrawlAmount = 0.5 ether;
+
+        // when - withdrawing as a non owner - expect a revert
+        vm.prank(DEPLOYER);
+        coinFlip.withdraw(withdrawlAmount);
+        assertEq(
+            address(coinFlip).balance,
+            initialCoinFlipBalance - withdrawlAmount
+        );
+    }
+
+    function test_RevertIfOwnerWithdrawsInvalidBalance() public {
+        // given
+        vm.deal(address(coinFlip), 1 ether);
+        uint256 withdrawlAmount = 5 ether;
+
+        // when - withdrawing as a non owner - expect a revert
+        vm.prank(DEPLOYER);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                CoinFlip.CoinFlip__InsufficientFundsToWithdraw.selector,
+                5 ether
+            )
+        );
+        coinFlip.withdraw(withdrawlAmount);
     }
 
     function compareCoinFlipRequest(
