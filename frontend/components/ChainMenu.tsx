@@ -14,8 +14,8 @@ const CHAIN_IDS_MAP: { [key: string]: number } = {
 
 const ChainMenu = () => {
     const chainIcons = [
-        <Image src="/sepolia-dolphin-logo.png" alt="Sepolia" width={28} height={28} style={{ marginRight: 8 }} />,
-        <Image src="/arbitrum-logo.png" alt="Arbitrum" width={28} height={28} style={{ marginRight: 8 }} />
+        <Image src="/arbitrum-logo.png" alt="Arbitrum" width={28} height={28} style={{ marginRight: 8 }} />,
+        <Image src="/sepolia-dolphin-logo.png" alt="Sepolia" width={28} height={28} style={{ marginRight: 8 }} />
     ];
     const [selectedChain, setSelectedChain] = useState<string | null>(null);
     const [anchorEl, setAnchorEl] = useState(null);
@@ -85,13 +85,13 @@ const ChainMenu = () => {
                     },
                 }}
             >
-                <MenuItem onClick={handleClose} divider selected={selectedChain === "sepolia"} title="sepolia">
-                    {chainIcons[0]}
-                    <Typography variant="body1">Sepolia</Typography>
-                </MenuItem>
                 <MenuItem onClick={handleClose} selected={selectedChain === "arbitrum"} title={"arbitrum"}>
-                    {chainIcons[1]}
+                    {chainIcons[0]}
                     <Typography variant="body1">Arbitrum</Typography>
+                </MenuItem>
+                <MenuItem onClick={handleClose} divider selected={selectedChain === "sepolia"} title="sepolia">
+                    {chainIcons[1]}
+                    <Typography variant="body1">Sepolia</Typography>
                 </MenuItem>
             </Menu>
         </div>
