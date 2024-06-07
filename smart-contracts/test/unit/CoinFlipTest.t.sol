@@ -35,6 +35,7 @@ contract CoinFlipTest is Test {
     bytes32 gasLane;
     uint32 callbackGasLimit;
     address link;
+    uint16 numOfRequestConfirmations;
 
     uint256 constant COINFLIP_INITIAL_BALANCE = 10 ether;
     uint256 constant INITIAL_PLAYER_BALANCE = 1 ether;
@@ -51,7 +52,8 @@ contract CoinFlipTest is Test {
             subscriptionId,
             gasLane,
             callbackGasLimit,
-            link
+            link,
+            numOfRequestConfirmations
         ) = config.activeNetworkConfig();
         console.log("CoinFlip balance: ", address(coinFlip).balance);
     }

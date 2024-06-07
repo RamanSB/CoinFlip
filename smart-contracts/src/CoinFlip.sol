@@ -97,8 +97,6 @@ contract CoinFlip is VRFConsumerBaseV2Plus {
     event CoinFlip__Withdrawl(uint256 indexed balance, uint256 indexed amount);
 
     // VRF State Variables
-    /// @dev Minimum number of blocks to be confirmed before Chainlink VRF invokes our fulfillRandomWords (sends us our random word.)
-    uint16 private constant NUMBER_OF_REQUEST_CONFIRMATIONS = 3;
     /// @dev Number of random words to request from Chainlink VRF
     uint32 private constant NUMBER_OF_WORDS = 1;
     /// @dev Address of Chainlink VRF Coordinator
@@ -109,6 +107,8 @@ contract CoinFlip is VRFConsumerBaseV2Plus {
     uint32 private immutable i_callbackGasLimit;
     /// @dev Specifies the maximum gas price we are willing to pay to make a request.
     bytes32 private immutable i_gasLane;
+    /// @dev Minimum number of blocks to be confirmed before Chainlink VRF invokes our fulfillRandomWords (sends us our random word.)
+    uint16 private immutable i_numOfRequestConfirmations;
     /// @dev ReEntrancy locks per user.
     mapping(address => bool) internal s_locksByUser;
 
@@ -136,13 +136,15 @@ contract CoinFlip is VRFConsumerBaseV2Plus {
         address vrfCoordinatorAddress,
         uint256 subscriptionId,
         bytes32 gasLane,
-        uint32 callbackGasLimit
+        uint32 callbackGasLimit,
+        uint16 numOfRequestConfirmations
     ) VRFConsumerBaseV2Plus(vrfCoordinatorAddress) {
         MINIMUM_WAGER = minimumWager;
         s_vrfCoordinatorAddress = vrfCoordinatorAddress;
         i_subscriptionId = subscriptionId;
         i_callbackGasLimit = callbackGasLimit;
         i_gasLane = gasLane;
+        i_numOfRequestConfirmations = numOfRequestConfirmations;
     }
 
     /**
@@ -222,7 +224,7 @@ contract CoinFlip is VRFConsumerBaseV2Plus {
             VRFV2PlusClient.RandomWordsRequest({
                 keyHash: i_gasLane,
                 subId: i_subscriptionId,
-                requestConfirmations: NUMBER_OF_REQUEST_CONFIRMATIONS,
+                requestConfirmations: i_numOfRequestConfirmations,
                 callbackGasLimit: i_callbackGasLimit,
                 numWords: NUMBER_OF_WORDS,
                 extraArgs: ""

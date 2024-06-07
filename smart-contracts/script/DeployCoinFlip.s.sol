@@ -16,11 +16,12 @@ contract DeployCoinFlip is Script {
             uint256 subscriptionId,
             bytes32 gasLane,
             uint32 callbackGasLimit,
-            address link
+            address link,
+            uint16 numOfRequestConfirmations
         ) = helperConfig.activeNetworkConfig();
 
         if (subscriptionId == 0) {
-            // Ideally only on Anvil (otherwise we can creates)
+            // Ideally only on Anvil (otherwise we can create)
             CreateSubscription createSubscription = new CreateSubscription();
             subscriptionId = createSubscription.createSubscription(
                 vrfCoordinator
@@ -39,7 +40,8 @@ contract DeployCoinFlip is Script {
             vrfCoordinator,
             subscriptionId,
             gasLane,
-            callbackGasLimit
+            callbackGasLimit,
+            numOfRequestConfirmations
         );
         vm.stopBroadcast();
 
