@@ -1,4 +1,4 @@
-import { Signer } from "ethers";
+import { Network, Signer } from "ethers";
 import { Provider } from "ethers";
 import { BrowserProvider, ethers, JsonRpcSigner } from "ethers";
 import { Dispatch, SetStateAction, useCallback, useEffect, useState } from "react";
@@ -16,13 +16,11 @@ export interface IWeb3State {
 
 const IS_AUTHENTICATED_STORAGE_KEY = "CoinFlip__isAuthenticated";
 
-
 declare global {
     interface Window {
         ethereum?: BrowserProvider
     }
 }
-
 
 const useWeb3Provider = () => {
     const initialState: IWeb3State = {
@@ -33,11 +31,12 @@ const useWeb3Provider = () => {
         isAuthenticated: false
     }
 
-    const [state, setState]: [IWeb3State, SetStateAction<Dispatch<IWeb3State>>] = useState(initialState);
+    const [state, setState]: [IWeb3State, Dispatch<SetStateAction<IWeb3State>>] = useState(initialState);
 
     const connectWallet = useCallback(async () => {
         console.log(`connectWallet(${JSON.stringify(state)})`);
         if (state.isAuthenticated) {
+            console.log(`connectWallet: isAuthenticated: ${state.isAuthenticated}`);
             return;
         }
 
@@ -48,11 +47,14 @@ const useWeb3Provider = () => {
                 console.log("Unable to detect window.ethereum property: user does not have an ETH wallet extension ");
                 // Do something user does not have an ETH wallet extension 
             }
+
             const provider: BrowserProvider = new ethers.BrowserProvider(ethereum);
             const accounts: string[] = await provider.send("eth_requestAccounts", []);
             if (accounts.length > 0) {
-                const signer: Signer /*JsonRpcSigner Concrete sub class of Signer */ = await provider.getSigner();
+                const signer: Signer = await provider.getSigner();
                 const chain = Number(await (await provider.getNetwork()).chainId);
+                console.log(`${(await provider.getNetwork()).name}`)
+                console.log(`Connecting wallet to: ${Network.from(chain).name}`);
                 setState({
                     ...state,
                     address: accounts[0],
@@ -97,6 +99,7 @@ const useWeb3Provider = () => {
         window.ethereum.on("chainChanged", (network: string) => {
             console.log(`Switched chain to: ${network}`);
             setState({ ...state, chainId: Number(network) });
+            window.location.reload();
         });
 
         return () => {

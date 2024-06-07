@@ -2,7 +2,7 @@
 
 // Define Shape of State
 
-import React, { ReactNode, createContext, useContext } from "react";
+import React, { Dispatch, ReactNode, SetStateAction, createContext, useContext } from "react";
 import useWeb3Provider, { IWeb3State } from "../hooks/useWeb3Provider";
 
 // Create Initial State
@@ -15,7 +15,8 @@ import useWeb3Provider, { IWeb3State } from "../hooks/useWeb3Provider";
 export interface IWeb3ContextState {
     connectWallet: () => Promise<void>;
     disconnect: () => void;
-    state: IWeb3State
+    state: IWeb3State;
+
 }
 
 const Web3Context = createContext<IWeb3ContextState | null>(null);

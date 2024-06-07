@@ -50,7 +50,7 @@ const BetForm: React.FC<IBetFormProps> = ({ viewType, setGameState }) => {
     const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
 
     const { bet, loading } = useBet();
-    const PRESET_BET_AMOUNTS: number[] = [0.0005, 0.0025, 0.01, 0.05, 0.1, 0.25];
+    const PRESET_BET_AMOUNTS: number[] = [0.001, 0.0025, 0.01, 0.05, 0.1, 0.25];
 
     const handleBet = async () => {
         try {

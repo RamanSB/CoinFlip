@@ -11,9 +11,9 @@ const Footer = () => {
             <a target="_blank" href="https://twitter.com/0xNascosta" rel="noopener noreferrer">
                 <FontAwesomeIcon icon={faTwitter} size="2x" style={{ color: "#74C0FC" }} />
             </a>
-            <a target="_blank" href="https://github.com/RamanSB" rel="noopener noreferrer" style={{ color: "white" }}>
+            {<a target="_blank" href="https://github.com/RamanSB" rel="noopener noreferrer" style={{ color: "white" }}>
                 <GitHubIcon style={{ fontSize: 36 }} />
-            </a>
+            </a>}
         </div>
     </div>
 }

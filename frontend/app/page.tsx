@@ -9,8 +9,6 @@ import { IWeb3ContextState, useWeb3Context } from "./contexts/Web3Context";
 import useCoinFlipContract from "./hooks/useCoinFlipContract";
 import styles from "./page.module.css";
 import { Choice, GameState, ViewType } from "./types/types";
-import Footer from "@/components/Footer";
-import { divideBigInts } from "./utils/maths";
 
 const Home = () => {
 
@@ -21,6 +19,8 @@ const Home = () => {
 
     const coinflipAudio = useMemo(() => new Audio("coinflip-sfx.mp3"), []);
     const coinLandAudio = useMemo(() => new Audio("coinland-sfx.mp3"), []);
+    const winAudio = useMemo(() => new Audio("win-sfx.mp3"), []);
+    const loseAudio = useMemo(() => new Audio("lose-sfx.mp3"), []);
 
     useEffect(() => {
 
@@ -29,27 +29,22 @@ const Home = () => {
                 return;
             }
             const userAddress = await state.signer?.getAddress();
-            console.log(`setUpEventListeners...`);
-            console.log(`User Address: ${userAddress}`);
 
             contract.on("CoinFlip__FlipRequest", (player, requestId, amount, choice) => {
                 console.log(`CoinFlip__FlipRequest(${player}, ${requestId}, ${amount} ${choice})`)
-                console.log(typeof amount);
                 if (userAddress === player) {
                     coinflipAudio.play();
                     setGameState(GameState.IN_PROGRESS);
-                    setMessage(`Flipping ${formatEther(amount)} ETH\n On \n${choice === 0 ? Choice.HEADS : Choice.TAILS}`);
+                    setMessage(`Flipping ${formatEther(amount)} ETH\n on \n${choice === 0 ? Choice.HEADS : Choice.TAILS}`);
                 }
             });
 
-            contract.on("CoinFlip__FlipWin", (player, requestId, amount) => {
+            contract.on("CoinFlip__FlipWin", async (player, requestId, amount) => {
                 try {
                     console.log(`FlipWin: Player: ${player}, Request ID: ${requestId}, Amount: ${amount}`);
                     if (userAddress === player) {
-                        coinLandAudio.play();
-                        console.log(`${userAddress} has won.`)
-                        console.log(typeof amount);
-
+                        await coinLandAudio.play();
+                        winAudio.play();
                         setMessage(`You Won 🎉 | ${formatEther(amount)} ETH`);
                         setGameState(GameState.WIN);
                         setTimeout(() => {
@@ -62,15 +57,16 @@ const Home = () => {
                 }
             });
 
-            contract.on("CoinFlip__FlipLoss", (player, requestId, amount) => {
+            contract.on("CoinFlip__FlipLoss", async (player, requestId, amount) => {
                 try {
                     console.log(`FlipLoss: Player: ${player}, Request ID: ${requestId}, Amount: ${amount}`);
                     if (userAddress === player) {
-                        coinLandAudio.play();
-                        console.log(`${userAddress} has lost.`)
-
-                        console.log(divideBigInts(amount, BigInt(2), 5));
-                        setMessage(`You Lost 😂 | ${formatEther(divideBigInts(amount, BigInt(2), 5))} ETH`);
+                        await coinLandAudio.play();
+                        loseAudio.play();
+                        const strAmount: any = String(amount);
+                        const lossAmount = strAmount / 2;
+                        console.log(lossAmount);
+                        setMessage(`You Lost 😂 | ${formatEther(lossAmount)} ETH`);
                         setGameState(GameState.LOSS);
                         setTimeout(() => {
                             setGameState(GameState.OPEN);
