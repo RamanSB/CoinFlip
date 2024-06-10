@@ -19,11 +19,11 @@ const Navbar = () => {
 
 const HouseBalance = () => {
     const { state } = useWeb3Context() as IWeb3ContextState;
-    const contractAddress = determineContractAddress(state.chainId);
+    const contractAddress: string | null = determineContractAddress(state.chainId);
+    const { balance } = useBalance(contractAddress || "");
     if (!contractAddress) {
         return;
     }
-    const { balance } = useBalance(contractAddress);
     return <div className={styles.leftNavbarItem}>
         <HouseIcon style={{ color: "", fontSize: "1.5em" }} />
         <p style={{ fontSize: "0.9em", marginTop: "2px" }}>{Number(balance).toFixed(4)}</p>

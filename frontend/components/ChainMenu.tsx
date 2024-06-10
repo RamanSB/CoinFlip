@@ -14,8 +14,8 @@ const CHAIN_IDS_MAP: { [key: string]: number } = {
 
 const ChainMenu = () => {
     const chainIcons = [
-        <Image src="/arbitrum-logo.png" alt="Arbitrum" width={28} height={28} style={{ marginRight: 8 }} />,
-        <Image src="/sepolia-dolphin-logo.png" alt="Sepolia" width={28} height={28} style={{ marginRight: 8 }} />
+        <Image src="/arbitrum-logo.png" alt="Arbitrum" key={0} width={28} height={28} style={{ marginRight: 8 }} />,
+        <Image src="/sepolia-dolphin-logo.png" alt="Sepolia" key={1} width={28} height={28} style={{ marginRight: 8 }} />
     ];
     const [selectedChain, setSelectedChain] = useState<string | null>(null);
     const [anchorEl, setAnchorEl] = useState(null);

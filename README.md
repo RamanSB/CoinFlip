@@ -2,6 +2,12 @@
 
 (CoinFlip)["http://www.google.com"] is an on-chain dApp that allows users to place bets with ETH and predict the outcome of a coin flip. This project is a demonstration of my progress in smart contract development, leveraging Chainlink’s VRF for provably fair randomness.
 
+[Notion Notes](https://www.notion.so/b4ea221c91e4427596df655b9738053f?pvs=25)
+
+[CoinFlip Video Demo](https://www.notion.so/CoinFlip-b4ea221c91e4427596df655b9738053f?pvs=4#506101ab049c4a14baf7f3dcde99b551)
+
+
+
 ## Development & Issues
 
 ## Tech Stack

@@ -14,7 +14,7 @@ const useCoinFlipContract = () => {
             return;
         }
         return new Contract(contractAddress, ABI['abi'], signer);
-    }, [state.provider, state.address, state.chainId]);
+    }, [state.provider, state.address, state.chainId, state.signer]);
 
     return contract;
 };

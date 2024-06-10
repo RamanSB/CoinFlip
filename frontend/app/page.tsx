@@ -17,12 +17,13 @@ const Home = () => {
     const [message, setMessage] = useState("");
     const contract = useCoinFlipContract();
 
-    const coinflipAudio = useMemo(() => new Audio("coinflip-sfx.mp3"), []);
-    const coinLandAudio = useMemo(() => new Audio("coinland-sfx.mp3"), []);
-    const winAudio = useMemo(() => new Audio("win-sfx.mp3"), []);
-    const loseAudio = useMemo(() => new Audio("lose-sfx.mp3"), []);
 
     useEffect(() => {
+
+        const coinflipAudio = new Audio("coinflip-sfx.mp3");
+        const coinLandAudio = new Audio("coinland-sfx.mp3");
+        const winAudio = new Audio("win-sfx.mp3");
+        const loseAudio = new Audio("lose-sfx.mp3");
 
         const setUpEventListeners = async () => {
             if (!contract) {
@@ -87,7 +88,7 @@ const Home = () => {
             console.log(`Tear down contract event listeners...`)
             contract?.removeAllListeners();
         }
-    }, [state.isAuthenticated, contract])
+    }, [state.isAuthenticated, contract, setGameState, state.signer])
 
     const renderContent = () => {
         if (!state.isAuthenticated) {

@@ -1,13 +1,14 @@
 import { formatEther } from "ethers";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import useWeb3Provider from "./useWeb3Provider";
 
 const useBalance = (address: string) => {
+
     const { state } = useWeb3Provider();
     const [balance, setBalance] = useState<string>("0");
     const [loading, setLoading] = useState<boolean>(false);
 
-    const fetchBalance = async () => {
+    const fetchBalance = useCallback(async () => {
         if (!state.provider) {
             console.log("Provider not available");
             return;
@@ -22,13 +23,16 @@ const useBalance = (address: string) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [address, state.provider])
 
     useEffect(() => {
+        if (!address) {
+            return;
+        }
         fetchBalance();
         const interval = setInterval(fetchBalance, 20000); // 20 seconds
         return () => clearInterval(interval);
-    }, [address, state.provider]);
+    }, [address, state.provider, fetchBalance]);
 
     return { balance, loading, fetchBalance };
 };
