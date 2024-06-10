@@ -7,10 +7,15 @@
 [CoinFlip Video Demo](https://www.notion.so/CoinFlip-b4ea221c91e4427596df655b9738053f?pvs=4#506101ab049c4a14baf7f3dcde99b551)
 
 
-
 ## Development & Issues
 
+- See the ViewType.tsx component, implement this: Allow users to switch between viewing bet amounts in ETH & $. Requires usage of an API that will not rate limit so we can poll for the latest price of Ether.
+- Add a way for users to fund the house via the Frontend (Currently only possible via interacting with the smart contract on chain).
+
 ## Tech Stack
+- NextJS, React, ethers.js
+- Foundry
+    - Chainlink
 
 ## Features
 
