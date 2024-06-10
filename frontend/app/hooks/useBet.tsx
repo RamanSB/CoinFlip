@@ -18,10 +18,9 @@ const useBet = () => {
             console.log(`bet(): Txn Hash: ${transaction.hash}`)
             console.log(`bet(): Nonce: ${transaction.nonce}`)
             console.log(`bet(): Data: ${transaction.data}`)
-            console.log(`bet(): Provider: ${transaction.provider}`)
             const receipt: TransactionReceipt | null = await transaction.wait();
             if (receipt) {
-                console.log(`bet() - Receipt -`);
+                console.log(`*** Receipt *** `);
                 console.log(`bet(): Status: ${receipt.status}`);
                 console.log(`bet(): TxnHash: ${receipt.hash}`);
                 console.log(`bet(): Gas Price: ${receipt.gasPrice}`);

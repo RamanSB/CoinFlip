@@ -30,14 +30,15 @@ const StyledButton = styled(Button)<{ active: string }>(({ theme, active }) => (
 
 const Navbar = () => {
     const { viewType, setViewType } = useGameContext();
+    const { state } = useWeb3Context() as IWeb3ContextState;
     return <div className={styles.navbar}>
-        <HouseBalance />
+        {state.isAuthenticated && <HouseBalance />}
         <div className={styles.rightNavbarItem}>
             <ChainMenu />
-            <ButtonGroup>
+            {/*             <ButtonGroup>
                 <StyledButton active={`${viewType === ViewType.CRYPTO}`} onClick={() => setViewType(ViewType.CRYPTO)}>Ξ</StyledButton>
                 <StyledButton active={`${viewType === ViewType.FIAT}`} style={{ cursor: "not-allowed" }} onClick={() => setViewType(ViewType.FIAT)}>$</StyledButton>
-            </ButtonGroup>
+            </ButtonGroup> */}
         </div>
     </div>
 };

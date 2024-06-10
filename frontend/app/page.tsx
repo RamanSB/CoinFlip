@@ -64,9 +64,10 @@ const Home = () => {
                         await coinLandAudio.play();
                         loseAudio.play();
                         const strAmount: any = String(amount);
+                        console.log(`Amount [String]: ${strAmount}`);
                         const lossAmount = strAmount / 2;
                         console.log(lossAmount);
-                        setMessage(`You Lost 😂 | ${formatEther(lossAmount)} ETH`);
+                        setMessage(`You Lost 😂 | ${formatEther(lossAmount.toFixed(0))} ETH`);
                         setGameState(GameState.LOSS);
                         setTimeout(() => {
                             setGameState(GameState.OPEN);

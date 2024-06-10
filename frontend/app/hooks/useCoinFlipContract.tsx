@@ -8,9 +8,6 @@ import { determineContractAddress } from "../utils/utils";
 
 const useCoinFlipContract = () => {
     const { state } = useWeb3Provider();
-
-
-
     const contract = useMemo(() => {
         if (!state.provider || !state.address) return null;
         const signer = state.signer;
