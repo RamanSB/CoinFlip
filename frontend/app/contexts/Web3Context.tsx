@@ -2,7 +2,7 @@
 
 // Define Shape of State
 
-import React, { Dispatch, ReactNode, SetStateAction, createContext, useContext } from "react";
+import React, { ReactNode, createContext, useContext } from "react";
 import useWeb3Provider, { IWeb3State } from "../hooks/useWeb3Provider";
 
 // Create Initial State
