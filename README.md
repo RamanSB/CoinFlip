@@ -4,7 +4,7 @@
 
 [Notion Notes](https://www.notion.so/b4ea221c91e4427596df655b9738053f?pvs=25)
 
-[CoinFlip Video Demo](https://www.notion.so/CoinFlip-b4ea221c91e4427596df655b9738053f?pvs=4#506101ab049c4a14baf7f3dcde99b551)
+[CoinFlip Video Demo](https://github.com/RamanSB/CoinFlip/blob/main/frontend/public/coinflip-demo.mov)
 
 
 ## Development & Issues
