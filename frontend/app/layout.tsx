@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
-import { Inter, Comfortaa } from "next/font/google";
+import { Comfortaa } from "next/font/google";
 
-import "./globals.css";
-import Navbar from "@/components/Navbar";
-import Providers from "./providers";
 import Footer from "@/components/Footer";
+import Navbar from "@/components/Navbar";
+import "./globals.css";
+import Providers from "./providers";
 
-const inter = Inter({ subsets: ["latin"] });
 const comfortaa = Comfortaa({ subsets: ["latin"] });
 
 export const metadata: Metadata = {

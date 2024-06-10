@@ -1,10 +1,8 @@
 import { Contract } from "ethers";
 import { useMemo } from "react";
 import ABI from "../utils/abi.json";
-import { COINFLIP_CONTRACT_ADDRESS_SEPOLIA, COINFLIP_CONTRACT_ADDRESS_ARBITRUM } from "../utils/constants";
-import useWeb3Provider from "./useWeb3Provider";
 import { determineContractAddress } from "../utils/utils";
-
+import useWeb3Provider from "./useWeb3Provider";
 
 const useCoinFlipContract = () => {
     const { state } = useWeb3Provider();

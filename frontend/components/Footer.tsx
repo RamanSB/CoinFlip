@@ -2,7 +2,6 @@
 import { faTwitter } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import GitHubIcon from '@mui/icons-material/GitHub';
-import { useRouter } from "next/navigation";
 
 const Footer = () => {
     return <div style={{ position: "fixed", bottom: 16, display: "flex", flexDirection: "row", justifyContent: "space-between", marginTop: 8, alignItems: "center", padding: 16, maxWidth: 660, width: "100%" }}>

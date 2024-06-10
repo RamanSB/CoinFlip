@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { ethers, formatEther } from "ethers";
+import { formatEther } from "ethers";
+import { useEffect, useState } from "react";
 import useWeb3Provider from "./useWeb3Provider";
 
 const useBalance = (address: string) => {
