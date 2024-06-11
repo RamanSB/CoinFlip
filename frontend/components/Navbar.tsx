@@ -12,7 +12,7 @@ const Navbar = () => {
     return <div className={styles.navbar}>
         {state.isAuthenticated && <HouseBalance />}
         <div className={styles.rightNavbarItem}>
-            <ChainMenu />
+            {state.isAuthenticated && <ChainMenu />}
         </div>
     </div>
 };
