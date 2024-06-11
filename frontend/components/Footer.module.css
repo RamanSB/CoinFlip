@@ -9,12 +9,13 @@
     padding: 16px;
     max-width: 660px;
     width: 100%;
+    z-index: -1;
 }
 
 @media screen and (max-width: 600px) {
     .footer {
         margin-top: 32px;
         position: relative;
-        
+        z-index: -1;
     }
 }
